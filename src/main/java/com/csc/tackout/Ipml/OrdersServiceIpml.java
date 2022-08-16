@@ -80,7 +80,6 @@ public class OrdersServiceIpml extends ServiceImpl<OrdersMapper, Orders> impleme
         orders.setCheckoutTime(LocalDateTime. now() );
         orders.setStatus(2) ;
         orders.setAmount(new BigDecimal(atomicInteger.get()));
-        orders.setUserId(id);
         orders.setNumber(String. valueOf(id1));
         orders.setUserName(user.getName());
         orders.setConsignee(addressBook.getConsignee());

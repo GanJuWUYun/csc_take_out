@@ -9,6 +9,7 @@ import com.csc.tackout.entity.SetmealDish;
 import com.csc.tackout.mapper.SetmealMapper;
 import com.csc.tackout.service.SetmealDishService;
 import com.csc.tackout.service.SetmealService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,5 +75,41 @@ public class SetmealServiceIpml extends ServiceImpl<SetmealMapper, Setmeal> impl
          setmealDishService.remove(lambdaQueryWrapper);
 
     }
+
+    @Override
+    public void updateSetmealStatusByIds(Integer status, List<Long> ids) {
+        //构造条件构造器
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(ids!=null,Setmeal::getId,ids);
+        List<Setmeal> setmealList = this.list(queryWrapper);
+        for (Setmeal setmeal : setmealList) {
+            if(setmeal !=null){
+                setmeal.setStatus(status);
+                this.updateById(setmeal);
+            }
+        }
+
+    }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     */
+    @Override
+    public SetmealDto getDate(Long id) {
+        Setmeal setmeal = this.getById(id);
+        SetmealDto setmealDto = new SetmealDto();
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(id!=null,SetmealDish::getSetmealId,id);
+        if(setmeal!=null){
+            BeanUtils.copyProperties(setmeal,setmealDto);
+            List<SetmealDish> list = setmealDishService.list(queryWrapper);
+            setmealDto.setSetmealDishes(list);
+            return setmealDto;
+        }
+        return null;
+
+    }
+
 
 }

@@ -1,7 +1,7 @@
 package com.csc.tackout.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,9 +23,7 @@ public class Orders implements Serializable {
     private Integer status;
 
 
-    //下单用户id
-    @TableField(value = "user_id")
-    private Long userId;
+    //下单用户
 
     //地址id
     private Long addressBookId;

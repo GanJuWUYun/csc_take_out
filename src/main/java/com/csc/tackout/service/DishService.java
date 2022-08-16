@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.csc.tackout.dto.DishDto;
 import com.csc.tackout.entity.Dish;
 
+import java.util.List;
+
 /**
  * ClassName:DishService
  * Package:com.csc.tackout.service
@@ -19,4 +21,6 @@ public interface DishService extends IService<Dish> {
     public DishDto getWithFlavor(Long id);
 
      public void updateWithFlavor(DishDto dishDto);
+
+     public void deleteByIds(List<Long> ids);
 }

@@ -26,4 +26,9 @@ public interface SetmealService extends IService<Setmeal> {
      * 删除套餐
      */
     public void  removeWithDish(List<Long> ids);
+
+
+    void updateSetmealStatusByIds(Integer status, List<Long> ids);
+
+    SetmealDto getDate(Long id);
 }

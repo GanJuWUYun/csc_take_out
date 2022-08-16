@@ -6,6 +6,7 @@ import com.csc.tackout.common.R;
 import com.csc.tackout.dto.SetmealDto;
 import com.csc.tackout.entity.Category;
 import com.csc.tackout.entity.Setmeal;
+import com.csc.tackout.entity.SetmealDish;
 import com.csc.tackout.service.CategoryService;
 import com.csc.tackout.service.SetmealDishService;
 import com.csc.tackout.service.SetmealService;
@@ -34,6 +35,7 @@ public class SetmealController {
     private SetmealDishService setmealDishService;
     @Autowired
     private CategoryService categoryService;
+
 
 
     @PostMapping
@@ -111,4 +113,57 @@ public class SetmealController {
         List<Setmeal> list = setmealService.list();
         return  R.success(list);
         }
+
+    /**
+     * 批量启售
+     * @return
+     */
+    @PostMapping("/status/{status}")
+        public R<String> status(@PathVariable("status") Integer status,@RequestParam List<Long> ids){
+            setmealService.updateSetmealStatusByIds(status,ids);
+            return R.success("成功");
+
+        }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+
+    @GetMapping("/{id}")
+        public R<SetmealDto> getData(@PathVariable Long id){
+            SetmealDto setmealDto = setmealService.getDate(id);
+            return R.success(setmealDto);
+        }
+
+
+    @PutMapping
+    public R<String> edit(@RequestBody SetmealDto setmealDto){
+
+        if (setmealDto==null){
+            return R.error("请求异常");
+        }
+
+        if (setmealDto.getSetmealDishes()==null){
+            return R.error("套餐没有菜品,请添加套餐");
+        }
+        List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
+        Long setmealId = setmealDto.getId();
+
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealDish::getSetmealId,setmealId);
+        setmealDishService.remove(queryWrapper);
+
+        //为setmeal_dish表填充相关的属性
+        for (SetmealDish setmealDish : setmealDishes) {
+            setmealDish.setSetmealId(setmealId);
+        }
+        //批量把setmealDish保存到setmeal_dish表
+        setmealDishService.saveBatch(setmealDishes);
+        setmealService.updateById(setmealDto);
+
+        return R.success("套餐修改成功");
+    }
+
 }

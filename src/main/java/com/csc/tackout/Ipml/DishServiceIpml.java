@@ -2,6 +2,7 @@ package com.csc.tackout.Ipml;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.csc.tackout.common.CustomException;
 import com.csc.tackout.dto.DishDto;
 import com.csc.tackout.entity.Dish;
 import com.csc.tackout.entity.DishFlavor;
@@ -85,5 +86,24 @@ public class DishServiceIpml extends ServiceImpl<DishMapper, Dish> implements Di
         }).collect(Collectors.toList());
 
         dishFlavorService.saveBatch(flavors);
+    }
+
+
+    @Override
+    public void deleteByIds(List<Long> ids) {
+        //构造条件构造器
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        //判断商品是否售卖，如果是抛出异常
+        queryWrapper.in(ids!=null,Dish::getId,ids);
+        List<Dish> dishList = this.list(queryWrapper);
+        for (Dish dish : dishList) {
+            Integer status = dish.getStatus();
+            if (status == 0){
+                this.removeById(dish.getId());
+            }else {
+                throw new CustomException("正在售卖，不能删除");
+            }
+        }
+
     }
 }
